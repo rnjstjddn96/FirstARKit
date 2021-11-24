@@ -10,15 +10,72 @@ import RealityKit
 
 class ViewController: UIViewController {
     
-    @IBOutlet var arView: ARView!
+    let arView: ARView = {
+        let arView = ARView()
+        arView.cameraMode = .ar
+        arView.automaticallyConfigureSession = true
+        arView.translatesAutoresizingMaskIntoConstraints = false
+        return arView
+    }()
+    
+    let currnetAnchorLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 20)
+        label.textColor = .white
+        label.backgroundColor = .black
+        label.text = "asdawdnwalidnaskdnawloidnaw"
+        return label
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Load the "Box" scene from the "Experience" Reality File
-        let boxAnchor = try! Experience.loadBox()
-        
-        // Add the box anchor to the scene
-        arView.scene.anchors.append(boxAnchor)
+        self.setUI()
+        self.setConstraints()
     }
+    
+    private func setUI() {
+        self.view.addSubview(arView)
+        self.arView.addSubview(currnetAnchorLabel)
+        currnetAnchorLabel.layer.zPosition = 100
+        setARView()
+    }
+    
+    private func setConstraints() {
+        arView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+        arView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        arView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        arView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+        
+        currnetAnchorLabel.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        currnetAnchorLabel.bottomAnchor.constraint(equalTo: self.arView.bottomAnchor).isActive = true
+        currnetAnchorLabel.leadingAnchor.constraint(equalTo: self.arView.leadingAnchor).isActive = true
+        currnetAnchorLabel.trailingAnchor.constraint(equalTo: self.arView.trailingAnchor).isActive = true
+    }
+    
+    private func setARView() {
+        guard let drumAnchor = try? Experience.loadDrum() else { return }
+        arView.scene.addAnchor(drumAnchor)
+//        let tap = UITapGestureRecognizer(target: self, action: #selector(changeScene))
+//        self.arView.addGestureRecognizer(tap)
+    }
+    
+    @objc func changeScene() {
+        arView.scene.anchors.removeAll()
+        
+        guard let drumAnchor = try? Experience.loadDrum() else { return }
+//        guard let foodAnchor = try? Experience.loadFood() else { return }
+        
+        arView.scene.addAnchor(drumAnchor)
+        
+//        if arView.scene.anchors.contains(where: { anchor in
+//            return anchor == drumAnchor
+//        }) {
+//            arView.scene.addAnchor(foodAnchor)
+//            self.currnetAnchorLabel.text = "FoodAnchor"
+//        } else {
+//            arView.scene.anchors.append(drumAnchor)
+//            self.currnetAnchorLabel.text = "drumAnchor"
+//        }
+    }
+    
 }
